@@ -152,13 +152,24 @@ def merge_row_left(row: List[int]) -> Tuple[List[int], int]:
 
 def transpose(board: List[List[int]]) -> List[List[int]]:
     """Return the matrix transpose of the board."""
-    
-    raise NotImplementedError
+    N = len(board)
+    new_board = copy_board(board)
+    for i in range(N):
+    	for j in range(i + 1):
+    		new_board[i][j], new_board[j][i] = new_board[j][i], new_board[i][j]
+
+    return new_board
 
 
 def reverse_rows(board: List[List[int]]) -> List[List[int]]:
     """Return a new board with each row reversed (mirror horizontally)."""
-    raise NotImplementedError
+    N = len(board)
+    new_board = copy_board(board)
+    for row in new_board:
+    	for i in range(N // 2):
+    		row[i], row[N - i - 1] = row[N - i - 1], row[i]
+
+    return new_board
 
 
 # -----------------------------
@@ -169,12 +180,22 @@ def reverse_rows(board: List[List[int]]) -> List[List[int]]:
 
 def move_left(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
     """Apply a LEFT move to the entire board using compress/merge pipeline."""
-    raise NotImplementedError
+    new_board, scores = [], 0
+    for row in board: 
+    	new_row, score = merge_row_left(row)
+    	new_board.append(new_row)
+    	scores += score
+
+    return new_board, scores, new_board != board
 
 
 def move_right(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
     """Derived via reverse_rows + move_left + reverse_rows."""
-    raise NotImplementedError
+    reverse_board = reverse_rows(board)
+    new_board, scores, flag = move_left(reverse_board)
+    new_board = reverse_rows(new_board)
+
+    return new_board, scores, flag
 
 
 def move_up(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
