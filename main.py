@@ -73,7 +73,7 @@ def main():
 
             if not has_move(board):
                 print(as_text_grid(board))
-                print(f"Game over! Final score: {score}")
+                print(f"🥺🥀❤️‍🩹 Game over! Final score: {score}")
                 while True:
                     again = input("🤗 Play again? (y/n): ").strip().lower()
                     if again == "y":

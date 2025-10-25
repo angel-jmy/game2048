@@ -17,7 +17,6 @@ class InvalidMove(Exception):
 
 # -----------------------------
 # Board creation & utilities
-# -----------------------------
 
 def new_board(size: int = GRID_SIZE, start_tiles: int = START_TILES, *, rng: Optional[random.Random] = None) -> List[List[int]]:
     """Return a fresh size×size board with `start_tiles` random 2s placed.
@@ -69,7 +68,6 @@ def get_empty_cells(board: List[List[int]]) -> List[Tuple[int, int]]:
 
 def spawn_tile(board: List[List[int]], *, rng: Optional[random.Random] = None) -> bool:
     """Place a new tile with value 2 on a random empty cell. Return True if placed, False if board is full.
-
     Side-effect: mutates `board`.
     """
     cells = get_empty_cells(board)
@@ -85,7 +83,6 @@ def spawn_tile(board: List[List[int]], *, rng: Optional[random.Random] = None) -
 # -----------------------------
 # Row operations (left-normalized)
 # Always implement LEFT first, then derive other directions via transforms.
-# -----------------------------
 
 def compress_row_left(row: List[int]) -> List[int]:
     """Slide all non-zero numbers to the left, preserving order; pad with zeros to length GRID_SIZE.
@@ -149,7 +146,6 @@ def merge_row_left(row: List[int]) -> Tuple[List[int], int]:
 
 # -----------------------------
 # Board transforms
-# -----------------------------
 
 def transpose(board: List[List[int]]) -> List[List[int]]:
     """Return the matrix transpose of the board."""
@@ -177,7 +173,6 @@ def reverse_rows(board: List[List[int]]) -> List[List[int]]:
 # Directional moves — compose row ops + transforms
 # Each returns (new_board, score_gained, moved_flag)
 # `moved_flag` is True iff the board actually changed.
-# -----------------------------
 
 def move_left(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
     """Apply a LEFT move to the entire board using compress/merge pipeline."""
@@ -219,7 +214,6 @@ def move_down(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
 
 # -----------------------------
 # Game state checks
-# -----------------------------
 
 def board_changed(before: List[List[int]], after: List[List[int]]) -> bool:
     """Return True if two boards differ anywhere."""
@@ -255,14 +249,7 @@ def has_move(board: List[List[int]]) -> bool:
 
 
 # -----------------------------
-# Optional helpers (nice-to-have, can skip at first)
-# -----------------------------
-
-def score_of(board: List[List[int]]) -> int:
-    """Compute a score heuristic (e.g., sum of merges or sum of tiles).
-    You can track score incrementally during moves instead.
-    """
-    raise NotImplementedError
+# Helpers
 
 
 def as_text_grid(board: List[List[int]]) -> str:
