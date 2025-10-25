@@ -14,7 +14,7 @@ TARGET_TILE: int = 2048
 
 class InvalidMove(Exception):
     """Raised when a move command is invalid or produces no change (optional)."""
-    
+
 # -----------------------------
 # Board creation & utilities
 # -----------------------------
@@ -267,4 +267,12 @@ def score_of(board: List[List[int]]) -> int:
 
 def as_text_grid(board: List[List[int]]) -> str:
     """Return a simple fixed-width ASCII grid for debugging / console UI."""
-    raise NotImplementedError
+    
+    sep = "+------+------+------+------+"  # horizontal divider
+    lines = [sep]
+    for row in board:
+        row_str = "|".join(f"{x:^6}" if x != 0 else "      " for x in row)
+        lines.append(f"|{row_str}|")
+        lines.append(sep)
+    return "\n".join(lines)
+
