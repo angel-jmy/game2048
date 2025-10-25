@@ -25,27 +25,28 @@ def new_board(size: int = GRID_SIZE, start_tiles: int = START_TILES, *, rng: Opt
         start_tiles: number of initial tiles to spawn (default 2)
         rng: optional Random instance for deterministic tests
     """
-
     if size <= 0:
     	raise ValueError("Grid size must be positive")
 
     '''Initialize the board'''
     board = [[0 for _ in range(size)] for _ in range(size)]
-
+    
     r = rng or random
+    
+    max_tiles = size * size
+    n_to_place = max(0, min(start_tiles, max_tiles))
+    
+    if n_to_place == 0:
+    	return board
 
-	max_tiles = size * size
-	n_to_place = max(0, min(start_tiles, max_tiles))
-	if n_to_place == 0:
-		return board
+    positions = r.sample(range(max_tiles), n_to_place)
 
-	positions = r.sample(range(max_tiles), n_to_place)
-	for pos in positions:
-		r_idx = pos // size
-		c_idx = pos % size
-		board[r_idx][c_idx] = 2
+    for pos in positions:
+    	r_idx = pos // size
+    	c_idx = pos % size
+    	board[r_idx][c_idx] = 2
 
-	return board
+    return board
 
 
 def copy_board(board: List[List[int]]) -> List[List[int]]:
@@ -61,7 +62,8 @@ def get_empty_cells(board: List[List[int]]) -> List[Tuple[int, int]]:
     	for j in range(size):
     		if board[i][j] == 0:
 	    		cells.append((i, j))
-	return cells
+
+    return cells
 
 
 def spawn_tile(board: List[List[int]], *, rng: Optional[random.Random] = None) -> bool:
@@ -91,7 +93,21 @@ def compress_row_left(row: List[int]) -> List[int]:
         [2,0,2,0] -> [2,2,0,0]
     Pure function: does not mutate input row.
     """
-    raise NotImplementedError
+    N = len(row)
+    new_row = row[:]
+    i, j = 0, 1
+    while i < N and j < N:
+    	if new_row[i] > 0:
+    		i += 1
+    		j += 1
+    	elif new_row[i] == new_row[j] == 0:
+    		j += 1
+    	else:
+    		new_row[i], new_row[j] = new_row[j], new_row[i]
+    		i += 1
+    		j += 1
+
+    return new_row
 
 
 def merge_row_left(row: List[int]) -> Tuple[List[int], int]:
@@ -102,7 +118,32 @@ def merge_row_left(row: List[int]) -> Tuple[List[int], int]:
         [2,2,2,0] -> ([4,2,0,0], 4)
         [2,2,2,2] -> ([4,4,0,0], 8)
     """
-    raise NotImplementedError
+    scores = 0
+    row0 = compress_row_left(row)
+    N = len(row0)
+    new_row, new_len = [], 0
+    i = 0
+    while i < N:
+    	if i + 1 < N and row0[i] == row0[i + 1] > 0:
+    		score = 2 * row0[i]
+    		scores += score
+    		new_len += 1
+    		new_row.append(score)
+    		i += 2
+    	elif i + 1 < N and row0[i] != row0[i + 1]:
+    		new_len += 1
+    		new_row.append(row0[i])
+    		i += 1
+    	elif i == N - 1:
+    		new_len += 1
+    		new_row.append(row0[i])
+    		i += 1
+    	else:
+    		break
+
+    new_row.extend([0] * (N - new_len))
+
+    return new_row, scores
 
 
 # -----------------------------
@@ -111,6 +152,7 @@ def merge_row_left(row: List[int]) -> Tuple[List[int], int]:
 
 def transpose(board: List[List[int]]) -> List[List[int]]:
     """Return the matrix transpose of the board."""
+    
     raise NotImplementedError
 
 
