@@ -14,6 +14,7 @@ TARGET_TILE: int = 2048
 
 class InvalidMove(Exception):
     """Raised when a move command is invalid or produces no change (optional)."""
+    
 # -----------------------------
 # Board creation & utilities
 # -----------------------------
@@ -186,7 +187,7 @@ def move_left(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
     	new_board.append(new_row)
     	scores += score
 
-    return new_board, scores, new_board != board
+    return new_board, scores, board_changed(board, new_board)
 
 
 def move_right(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
@@ -200,12 +201,20 @@ def move_right(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
 
 def move_up(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
     """Derived via transpose + move_left + transpose."""
-    raise NotImplementedError
+    trans_board = transpose(board)
+    new_board, scores, flag = move_left(trans_board)
+    new_board = transpose(new_board)
+
+    return new_board, scores, flag
 
 
 def move_down(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
     """Derived via transpose + move_right + transpose."""
-    raise NotImplementedError
+    trans_board = transpose(board)
+    new_board, scores, flag = move_right(trans_board)
+    new_board = transpose(new_board)
+
+    return new_board, scores, flag
 
 
 # -----------------------------
@@ -214,19 +223,35 @@ def move_down(board: List[List[int]]) -> Tuple[List[List[int]], int, bool]:
 
 def board_changed(before: List[List[int]], after: List[List[int]]) -> bool:
     """Return True if two boards differ anywhere."""
-    raise NotImplementedError
+    return before != after
 
 
 def won(board: List[List[int]], target: int = TARGET_TILE) -> bool:
     """Return True if any tile >= target (default 2048)."""
-    raise NotImplementedError
+    for row in board:
+    	for val in row:
+    		if val >= target:
+    			return True
+    return False
 
 
 def has_move(board: List[List[int]]) -> bool:
     """Return True if any empty cell exists or any adjacent pair can merge.
     Used to detect game-over when False.
     """
-    raise NotImplementedError
+    cells = get_empty_cells(board)
+    if cells:
+    	return True
+    
+    N = len(board)
+    for i in range(N - 1):
+    	for j in range(N - 1):
+    		if board[i][j] == board[i + 1][j]:
+    			return True
+    		if board[i][j] == board[i][j + 1]:
+    			return True
+
+    return False
 
 
 # -----------------------------
