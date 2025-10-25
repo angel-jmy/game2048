@@ -20,11 +20,12 @@ You can play in the **terminal** or in a **Pygame window** with colorful tiles a
 * Console version:
 ```bash
 python main.py
-
+```
 
 * GUI version:
 ```bash
 python gui.py
+```
 
 
 
