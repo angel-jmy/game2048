@@ -11,6 +11,7 @@ FONT_NAME = "arial"
 BG_COLOR = (187, 173, 160)
 EMPTY_COLOR = (205, 193, 180)
 TEXT_COLOR = (119, 110, 101)
+TOP_OFFSET = 50 # For displaying scores
 
 # tile colors (add more as you like)
 TILE_COLORS = {
@@ -30,19 +31,20 @@ TILE_COLORS = {
 def draw_board(screen, board, font, score):
     size = len(board)
     screen.fill(BG_COLOR)
+    font_score = pygame.font.SysFont(FONT_NAME, 26)
 
     # Draw scores
-    score_text = font.render(f"Score: {score}", True, (0, 0, 0))
+    score_text = font_score.render(f"Score: {score}", True, (0, 0, 0))
     screen.blit(score_text, (20, 10))  # small offset from top-left
 
-    # --- Draw grid below score ---
-    top_offset = 60  # space for score text
+    # Draw grid below score
+    # top_offset = 60  # space for score text
     for r in range(size):
         for c in range(size):
             val = board[r][c]
             color = TILE_COLORS.get(val, EMPTY_COLOR)
             x = c * (CELL_SIZE + CELL_MARGIN) + CELL_MARGIN
-            y = r * (CELL_SIZE + CELL_MARGIN) + top_offset
+            y = r * (CELL_SIZE + CELL_MARGIN) + TOP_OFFSET
             rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
             pygame.draw.rect(screen, color, rect, border_radius=8)
             if val != 0:
@@ -60,15 +62,18 @@ def main():
     board = new_board()
     size = len(board)
     width = size * (CELL_SIZE + CELL_MARGIN) + CELL_MARGIN
-    height = width
+    height = width + TOP_OFFSET
     screen = pygame.display.set_mode((width, height))
     font = pygame.font.SysFont(FONT_NAME, 40)
 
     running = True
     clock = pygame.time.Clock()
 
+    # Initialize the score
+    scores = 0
+
     while running:
-        draw_board(screen, board, font)
+        draw_board(screen, board, font, scores)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -87,6 +92,7 @@ def main():
 
                 if moved:
                     board = new
+                    scores += score
                     spawn_tile(board)
                     if won(board):
                         print("🎉 You won!")
